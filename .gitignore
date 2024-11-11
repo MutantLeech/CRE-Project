@@ -1,1 +1,2 @@
-datafiles/
+datafiles/*.pgn
+datafiles/*.pgn.zst
