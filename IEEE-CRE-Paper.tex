@@ -88,7 +88,7 @@ the beginning of a sentence: ``Equation \eqref{eq} is . . .''
 
 \section{Methodology}
 \subsection{Data Collection and Preprocessing}
-To gather the data about the different chess games there is a website https://database.lichess.org/ that is filled with different games with different level of players. the data includes the move sequences, player ratings, game outcomes, and other metadata, which provides the foundation for clustering analysis. The data is cleaned by removing games with non-stnadard variants, incomplete results, or issing Elo ratings.
+To gather the data about the different chess games there is a website https://database.lichess.org/ that is filled with different games with different levels of players. the data includes the move sequences, player ratings, game outcomes, and other metadata, which provides the foundation for clustering analysis. The data is cleaned by removing games with non-standard variants, incomplete results, or missing Elo ratings.
 
 The preprocessing steps include splitting each game's metadata and move sequences, then filtering out games that do not meet the following criteria:
 \begin{itemize}
@@ -97,20 +97,35 @@ The preprocessing steps include splitting each game's metadata and move sequence
     \item The game must have valid Elo ratings for both players.
 \end{itemize}
 
-The cleaned data consits of three key features for each game: the White player's Elo rating, the number of moves made during the game, and the game results (encoded as 0, 0.5, or 1 for black win, draw, or white win, respectively)
+The cleaned data consist of three key features for each game: the White player's Elo rating, the number of moves made during the game, and the game results (encoded as 0, 0.5, or 1 for black win, draw, or white win, respectively)
 
 \subsection{Feature Extraction}
 
-The feature extraction process focuses on simplifying and organizing the data for use in clustering algorithms. The extraced features include:
+The feature extraction process focuses on simplifying and organizing the data for use in clustering algorithms. The extracted features include:
 \begin{itemize}
     \item Player Elo ratings: The rating of the white and black players
     \item Move length: The total number of moves made during the game.
-    \item Game result: The outcome of the game, represented numerically for clustering purposes.
+    \item Game result: The outcome of the game, is represented numerically for clustering purposes.
 \end{itemize}
-The moves are split into individual actions, and each game's result is encoded to represent the player's performance, either as a win, loss, to draw.
+The moves are split into individual actions, and each game's result is encoded to represent the player's performance, either as a win, loss, or draw.
 
-\subsection{Clustering Approach}
+%this can be moved around to wherever
+\begin{figure}[htbp]
+\centerline{\includegraphics[scale=0.5]{CRE project.png}}
+\caption{Games Played vs. ELO Rating Bins (top): A bar chart showing the number of games played in each ELO rating range.
+Win/Loss/Draw Proportions vs. ELO Rating (bottom): A stacked area chart visualizing the proportions of wins (green), losses (red), and draws (gray) for each ELO rating range.}
+\label{fig}
+\end{figure}
 
+\subsection{Clustering Implementation}
+ The cleaned dataset is used to group games based on player performance. The program applies the k-means clustering algorithm, leveraging Elo ratings as the primary axis for separation. Key steps include:
+\begin{itemize}
+    \item Determining the number of clusters(k): Using silhouette scores, the optimal value for k is selected, ensuring well-defined groupings.
+    \item Running k-means: the algorithm partitions the data into clusters, where each cluster represents a subset of games with similar Elo ranges and gameplay characteristics.
+\end{itemize}
+
+\subsection{Statistical Analysis and Visualization}
+After clustering the dataset, statistical analyses and visualization are performed to interpret the relationship between Elo ratings, game results, and gameplay patterns. these analyses highlight trends across different skill levels and provide actionable insight into the dataset.
 
 
 \section{Experimental Setup}
@@ -123,12 +138,6 @@ The moves are split into individual actions, and each game's result is encoded t
 \subsection{Implementation Details}
 
 \subsection{Hyper parameters}
-
-\section{Results and Discussion}
-
-\section{Conclusion}
-
-\section{References}
 
 \subsection{Figures and Tables}\label{FAT}
 \paragraph{Positioning Figures and Tables} Place figures and tables at the top and 
@@ -154,15 +163,6 @@ copy& More table copy$^{\mathrm{a}}$& &  \\
 \label{tab1}
 \end{center}
 \end{table}
-
-\begin{figure}[htbp]
-\centerline{\includegraphics{overleaf logo.png}}
-\caption{Example of a figure caption.}
-\label{fig}
-\end{figure}
-
-\includegraphics[scale = 1, ]
-{overleaf logo.png}
 
 \section{results and discussion}
 
