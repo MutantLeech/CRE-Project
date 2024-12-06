@@ -163,7 +163,9 @@ The baselines were necessary for giving a comparison to the effectiveness of the
 \subsection{Implementation Details}
 The PGN clustering project has been developed in Python using the libraries: numpy for numerical operations, matplotlib for visualization, and sklearn to apply k-means clustering. For PGN elaboration, a personal parser has been used to extract relevant features from each match: players' ratings, total moves, and game outcomes. Then, data normalization was performed for correct clustering, while missing values were treated by deleting incomplete games. Therefore, k-means implementation was employed for the structured dataset, while the number of clusters was determined by the elbow method and silhouette score for the best performance. All the computations have been done on the free version of Google Colab, where computational resources were good enough to run this clustering analysis, though sometimes very limiting regarding duration and hardware.
 
-\subsection{Hyper parameters}
+\subsection{Hyperparameters}
+The hyperparameters in this program are tuned carefully to optimize the clustering and feature extraction performance of the chess games. For the k-means clustering algorithm, the most important hyperparameter was the number of clusters derived from the unique groups of ELO rating determined by the program. This made sure that the grouping of the skill levels of players was logical. We varied the RESOLUTION parameter from this model to 500, which grouped the ELO ratings into bins of 500, thus affecting clustering granularity. The preprocessing feature extraction also went through a TF-IDF vectorizer where, among its parameters, tokenization and stopword filtering were developed focusing on dealing with the densest pieces of text data. These hyperparameters control parsing data, such as GAME LIMIT, but also optional flags like DOUBLE GAMES. These balance the volume and variety of preprocessed data for scalability but still meaningful results. These have been iteratively tuned through testing to balance performance with computational efficiency.
+
 
 \subsection{Figures and Tables}\label{}
 \paragraph{Positioning Figures and Tables} Place figures and tables at the top and 
@@ -188,16 +190,16 @@ quantities and units. For example, write ``Temperature (K)'', not
 ``Temperature/K''.
 
 \begin{thebibliography}{00}
-\bibitem{b1} F. Wijayanto, "Clustering Analysis of Chess Portable Game Notation Text," Jurnal Sians, Nalar, Dan Aplikasi Teknologi Informasi, 3(3), pp. 137--142, 2024.
-\bibitem{b2} K. Raghav and L. Ahuja, "Chess Opening Analysis Using DBSCAN Clustering and Predictive Modeling," 2024 11th International Conference on Reliability, Infocom Technologies and Optimization (Trends and Future Directions) (ICRITO), Noida, India, 2024, pp. 1-5.
-\bibitem{b3} C. Bauckhage, A. Drachen, and R. Sifa, "Clustering Game Behavior Data." IEEE Transactions on Computational Intelligence and AI in Games 7 (3).
-\bibitem{b4} *Change* S. Shukla and N. S., "A Review ON K-means DATA Clustering APPROACH," .
-\bibitem{b5} *Change* R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
-\bibitem{b6} *Change* Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
-\bibitem{b7} *Change* M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
-\bibitem{b8} *Change* D. P. Kingma and M. Welling, ``Auto-encoding variational Bayes,'' 2013, arXiv:1312.6114. [Online]. Available: https://arxiv.org/abs/1312.6114
-\bibitem{b9} *Change* S. Liu, ``Wi-Fi Energy Detection Testbed (12MTC),'' 2023, gitHub repository. [Online]. Available: https://github.com/liustone99/Wi-Fi-Energy-Detection-Testbed-12MTC
-\bibitem{b10} *Change* ``Treatment episode data set: discharges (TEDS-D): concatenated, 2006 to 2009.'' U.S. Department of Health and Human Services, Substance Abuse and Mental Health Services Administration, Office of Applied Studies, August, 2013, DOI:10.3886/ICPSR30122.v2
+\bibitem{b1} F. Wijayanto, “Clustering Analysis of Chess Portable Game Notation Text,” Jurnal Sains, Nalar, Dan Aplikasi Teknologi Informasi, vol. 3, no. 3, pp. 137–142, 2024.
+\bibitem{b2}K. Raghav and L. Ahuja, “Chess Opening Analysis Using DBSCAN Clustering and Predictive Modeling,” in 2024 11th International Conference on Reliability, Infocom Technologies and Optimization (Trends and Future Directions) (ICRITO), Noida, India, Mar. 14–15, 2024, pp. 1–5.
+\bibitem{b3} C. Bauckhage, A. Drachen, and R. Sifa, “Clustering Game Behavior Data,” IEEE Transactions on Computational Intelligence and AI in Games, vol. 7, no. 3, 2015.
+\bibitem{b4} S. Shukla and S. Naganna, “A review on K-means data clustering approach,” International Journal of Information \& Computation Technology, vol. 4, no. 17, pp. 1847–1860, 2014.
+\bibitem{b5} T. Kanungo, D. M. Mount, N. S. Netanyahu, C. D. Piatko, R. Silverman, and A. Y. Wu, “An efficient K-means clustering algorithm: Analysis and implementation,” IEEE Transactions on Pattern Analysis and Machine Intelligence, vol. 24, no. 7, pp., 2002.
+\bibitem{b6} B. S. Kong, I. Hipiny, and H. Ujir, “Classification of digital chess pieces and board position using SIFT,” in 2021 IEEE International Conference on Signal and Image Processing Applications (ICSIPA), Kuala Terengganu, Malaysia, Sept. 13–15, 2021, pp. 66–71.
+\bibitem{b7} D. Shamsudin, L. M. Chew, and O. L. Yeng, “Clustering algorithms analysis based on arcade game player behavior,” in 2022 IEEE Fifth International Conference on Artificial Intelligence and Knowledge Engineering (AIKE), Laguna Hills, CA, USA, Sept. 19–21, 2022, pp. 122–125.
+\bibitem{b8} H. Kwon, W. Jeong, D.-W. Kim, and S.-I. Yang, “Clustering player behavioral data and improving performance of churn prediction from mobile game,” in 2018 International Conference on Information and Communication Technology Convergence (ICTC), Jeju Island, Korea (South), Oct. 17–19, 2018, pp. 1252–1254.
+\bibitem{b9} H. Wang, X. Liu, and M. Shi, “Study on the chessboard recognition and positioning method of Chess Game System,” Advances in Intelligent Systems Research, 2015.
+\bibitem{b10} X. Liu, J. Jin, Q. Zhong, Q. Lei, Z. Wu, and Z. Fang, “Vision-based chess detection for a robotic companion,” in 2021 IEEE 6th International Conference on Computer and Communication Systems (ICCCS), Chengdu, China, Apr. 23–26, 2021, pp. 248–253.
 \end{thebibliography}
 
 \end{document}
