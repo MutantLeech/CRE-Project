@@ -13,7 +13,7 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Classification of PGN\\
+\title{Classification and Clustering of Chess Portable Game Notation Text\\
 %{\footnotesize \textsuperscript{*}}
 %\thanks{Identify applicable funding agency here. If none, delete this.}
 }
@@ -90,6 +90,31 @@ The importance of this problem lies in its potential to enhance player developme
 \subsection{Data Collection and Preprocessing}
 To gather the data about the different chess games there is a website https://database.lichess.org/ that is filled with different games with different levels of players. the data includes the move sequences, player ratings, game outcomes, and other metadata, which provides the foundation for clustering analysis. The data is cleaned by removing games with non-standard variants, incomplete results, or missing Elo ratings.
 
+Original data can be accessed under the open database at Lichess.org. This is a very good source of raw record data for chess games, such as several billion games within the Lichess platform. It maintains metadata about the players' ratings, time controls, and outcomes, along with full move sequences in PGN format. The database is a treasure for research due to its size, diversity, and good accessibility; material on most types of games and all skill levels from beginners through grandmasters is covered.
+
+In this project, only a subset of the data will be selected to demonstrate how some standard features like Rating, Total Move Count, and Outcome enable some effective clustering analysis. The data is already in structured PGN format; therefore, parsing and feature extraction will be easier. It will be ideal for exploring patterns and trends occurring in the play of chess.
+
+This is documented in greater detail below, especially in Table \ref{example-games}, which outlines the structure and content of the files that make up the dataset.
+
+\begin{table}[htbp]
+\vspace{.01cm}
+\caption{Example Games from the Dataset}
+\begin{center}
+\begin{tabular}{|lllll|}
+\hline
+\multicolumn{5}{|c|}{lichess.org dataset}                                                                                                      \\ \hline
+\multicolumn{1}{|l|}{White name}  & \multicolumn{1}{l|}{Black name} & \multicolumn{1}{l|}{Result} & \multicolumn{1}{l|}{White Elo} & Black Elo \\ \hline
+\multicolumn{1}{|l|}{paul2chess3} & \multicolumn{1}{l|}{Andique}    & \multicolumn{1}{l|}{1-0}    & \multicolumn{1}{l|}{1509}      & 1623      \\ \hline
+\multicolumn{1}{|l|}{Shenhewho}   & \multicolumn{1}{l|}{Gentux}     & \multicolumn{1}{l|}{1-0}    & \multicolumn{1}{l|}{1857}      & 1963      \\ \hline
+\end{tabular}
+\begin{minipage}{8cm}
+    \vspace{0.1cm}
+    \small The table above shows 2 games from the dataset showing the player names, the result of the game, and each player elo. there is other data included within the file but most of it is nonsense.
+\end{minipage}
+\end{center}
+\label{example-games}
+\end{table}
+
 The preprocessing steps include splitting each game's metadata and move sequences, then filtering out games that do not meet the following criteria:
 \begin{itemize}
     \item The game must be a standard chess game (no variants).
@@ -145,30 +170,6 @@ After clustering the dataset, statistical analyses and visualization are perform
 
 
 \section{Experimental Setup}
-\subsection{Dataset}
-Original data can be accessed under the open database at Lichess.org. This is a very good source of raw record data for chess games, such as several billion games within the Lichess platform. It maintains metadata about the players' ratings, time controls, and outcomes, along with full move sequences in PGN format. The database is a treasure for research due to its size, diversity, and good accessibility; material on most types of games and all skill levels from beginners through grandmasters is covered.
-
-In this project, only a subset of the data will be selected to demonstrate how some standard features like Rating, Total Move Count, and Outcome enable some effective clustering analysis. The data is already in structured PGN format; therefore, parsing and feature extraction will be easier. It will be ideal for exploring patterns and trends occurring in the play of chess.
-
-This is documented in greater detail below, especially in Table 1, which outlines the structure and content of the files that make up the dataset.
-
-\begin{table}[htbp]
-\vspace{.01cm}
-\caption{}
-\begin{center}
-\begin{tabular}{|lllll|}
-\hline
-\multicolumn{5}{|c|}{lichess.org dataset}                                                                                                      \\ \hline
-\multicolumn{1}{|l|}{White name}  & \multicolumn{1}{l|}{Black name} & \multicolumn{1}{l|}{Result} & \multicolumn{1}{l|}{White Elo} & Black Elo \\ \hline
-\multicolumn{1}{|l|}{paul2chess3} & \multicolumn{1}{l|}{Andique}    & \multicolumn{1}{l|}{1-0}    & \multicolumn{1}{l|}{1509}      & 1623      \\ \hline
-\multicolumn{1}{|l|}{Shenhewho}   & \multicolumn{1}{l|}{Gentux}     & \multicolumn{1}{l|}{1-0}    & \multicolumn{1}{l|}{1857}      & 1963      \\ \hline
-\end{tabular}
-\begin{minipage}{8cm}
-    \vspace{0.1cm}
-    \small The table above shows 2 games from the dataset showing the payer names, the result of the game, and each player elo. there is other data included within the file but most of it is nonsense.
-\end{minipage}
-\end{center}
-\end{table}
 
 \subsection{Evaluation Metrics}
 Quality clustering for the PGN project was made using some different metrics; among them, the most important was the silhouette score since this score gives a measure of how well the clusters are kept apart, and how well the game fits within its assigned cluster. In that way, clusters reflect real differences in either the level of players or their style of play. Additionally, inertia (within-cluster sum of squares) was used to evaluate the compactness of data points within clusters. Cluster size distribution was analyzed to identify any imbalances or outliers affecting the clustering process. To ensure the clusters' interpretability, we compared results against logical groupings, such as player rating ranges or typical game lengths, confirming that the clusters provided insight into game dynamics. These also allow us to assess the performance of our approach against overall simpler baselines such as rating-only clustering.
@@ -194,54 +195,74 @@ figures and tables after they are cited in the text. Use the abbreviation
 Before attempting any sort of classification, we first remove the top and bottom 1\% of data for the purpose of removing any outliers. Games are then grouped by Elo rating into groups of 500, normalized so that the group containing the least experienced players is group 0.
 
 We use a combination of a variety of classification techniques on both the PGN moves and the UCI moves to see which are best suited for the task. Each combination will be represented with a set of 3 symbols, to be appended to the document set used.
-- We compare and contrast two kinds of vectorizers. The first is a TF-IDF vectorization, with the idea being that players of a certain skill level will tend towards certain moves which can be used to distinguish them. The second is a vectorization to word counts as a baseline. It's important to make sure that the vectorizer does not force the text to lowercase; It doesn't matter with UCI, but PGN text has integral capitalization which needs to be preserved. This toggle is the first symbol of the set; TF-IDF vectorization will use T as its symbol, and word count vectorization will use C.
-- The data then needs to be split into a training group and a test group. 75\% of the data will be used to train the classifiers, and the remaining 25\% will be used to test their accuracy. The imbalance of the initial dataset is exaggerated with the increase in group size, so we additionally see how stratifying the data so that each class is equally represented affects the accuracy. If the data is stratified, the second symbol will be 1, and if not, it will be 0.
-- Two kinds of Naive-Bayes classifiers are used to attempt to model and predict the data. First is a Multinomial Naive-Bayes (MNB) classification, and the second is a Complement Naive-Bayes (CNB) classification. CNB is designed to take the complement of each class for its weights, and is suited to imbalanced datasets. Theoretically, CMB will perform better than MNB due to the imbalance of the dataset it will be given. MNB will be M, CMB will be C.
+\begin{enumerate}
+\item We compare and contrast two kinds of vectorizers. The first is a TF-IDF vectorization, with the idea being that players of a certain skill level will tend towards certain moves which can be used to distinguish them. The second is a vectorization to word counts as a baseline. It's important to make sure that the vectorizer does not force the text to lowercase; It doesn't matter with UCI, but PGN text has integral capitalization which needs to be preserved. This toggle is the first symbol of the set; TF-IDF vectorization will use \textbf{T} as its symbol, and word count vectorization will use \textbf{C}.
+\item The data then needs to be split into a training group and a test group. 75\% of the data will be used to train the classifiers, and the remaining 25\% will be used to test their accuracy. The imbalance of the initial dataset is exaggerated with the increase in group size, so we additionally see how stratifying the data so that each class is equally represented affects the accuracy. If the data is stratified, the second symbol will be \textbf{1}, and if not, it will be \textbf{0}.
+\item Two kinds of Naive-Bayes classifiers are used to attempt to model and predict the data. First is a Multinomial Naive-Bayes (MNB) classification, and the second is a Complement Naive-Bayes (CNB) classification. CNB is designed to take the complement of each class for its weights, and is suited to imbalanced datasets. Theoretically, CMB will perform better than MNB due to the imbalance of the dataset it will be given. MNB will be \textbf{M}, CMB will be \textbf{C}.
+\end{enumerate}
 
 As an example, UCI text which is treated to a TF-IDF vectorization, stratified data, and Complement Naive-Bayes classification will be represented as "UCI-T1C."
 
 \section{Results and Discussion}
 
-PGN-T1M: 62.232389\%
-PGN-T1C: 55.505847\%
-PGN-T0M: 62.264947\%
-PGN-T0C: 55.520559\%
-PGN-C1M: 57.755987\%
-PGN-C1C: 55.037731\%
-PGN-C0M: 57.753334\%
-PGN-C0C: 55.062090\%
-
-UCI-T1M: 62.297264\%
-UCI-T1C: 55.598699\%
-UCI-T0M: 62.330305\%
-UCI-T0C: 55.622575\%
-UCI-C1M: 56.749333\%
-UCI-C1C: 54.837317\%
-UCI-C0M: 56.740892\%
-UCI-C0C: 54.786912\%
+\begin{table}[]
+\caption{Classification Accuracy by Method Group}
+\centering
+\begin{tabular}{lr}
+\hline\hline
+Method Group & Accuracy \\ [0.5ex]
+\hline
+PGN-T1M & 62.232\% \\
+PGN-T1C & 55.506\% \\
+PGN-T0M & \textbf{62.265\%} \\
+PGN-T0C & 55.521\% \\
+PGN-C1M & 57.756\% \\
+PGN-C1C & 55.038\% \\
+PGN-C0M & 57.753\% \\
+PGN-C0C & 55.062\% \\ [1ex]
+\hline
+\end{tabular}
+\begin{tabular}{lr}
+\hline\hline
+Method Group & Accuracy \\ [0.5ex]
+\hline
+UCI-T1M & 62.297\% \\
+UCI-T1C & 55.599\% \\
+UCI-T0M & \textbf{62.330\%} \\
+UCI-T0C & 55.623\% \\
+UCI-C1M & 56.749\% \\
+UCI-C1C & 54.837\% \\
+UCI-C0M & 56.741\% \\
+UCI-C0C & 54.787\% \\ [1ex]
+\hline
+\end{tabular}
+\label{class-results}
+\end{table}
 
 \subsection{Overall}
 
-On PGN text, the highest accuracy is 62.26\%, with the Multinomial Naive-Bayes classifier, unstratified data splits, and the TF-IDF vectorizer (PGN-T0M). These same settings produce the highest accuracy for UCI text as well, at 62.33\% (UCI-T0M).
+On PGN text, the highest accuracy is 62.265\%, with the Multinomial Naive-Bayes classifier, unstratified data splits, and the TF-IDF vectorizer (PGN-T0M). These same settings produce the highest accuracy for UCI text as well, at 62.330\% (UCI-T0M).
 
 \subsection{Trends}
 
 Some trends appear in regards to how specific choices affect the average accuracy of the predictions.
-- Generally, classification is improved by using TF-IDF vectorization over word count vectorization, with MNB losing approximately 5-6\% accuracy when switching between the two and CMB losing 0.5-0.9\%.
-- Strafitication affected accuracy very little, with the random sampling picking approximately the same frequency of classes as the guaranteed frequencies enforced by stratification. In most cases, not using stratification increased overall accuracy by a few hundredths of a percentage point, except when using UCI text with word count vectorization, in which case accuracy decreases approxumately 0.01\% with MNB and 0.05\% with CMB.
-- Against expectations, Multinomial Naive-Bayes outperforms Complement Naive-Bayes in all cases, being approximately 7\% more accurate with TD-IDF vectorization and 2\% more accurate with word count vectorization.
+\begin{itemize}
+\item Generally, classification is improved by using TF-IDF vectorization over word count vectorization, with MNB losing approximately 5-6\% accuracy when switching between the two and CMB losing 0.5-0.9\%.
+\item Strafitication affected accuracy very little, with the random sampling picking approximately the same frequency of classes as the guaranteed frequencies enforced by stratification. In most cases, not using stratification increased overall accuracy by a few hundredths of a percentage point, except when using UCI text with word count vectorization, in which case accuracy decreases approximately 0.008\% with MNB and 0.05\% with CMB.
+\item Against expectations, Multinomial Naive-Bayes outperforms Complement Naive-Bayes in all cases, being approximately 7\% more accurate with TD-IDF vectorization and 2\% more accurate with word count vectorization.
+\end{itemize}
 
 \section{Conclusion}
 
-Figure Labels: Use 8 point Times New Roman for Figure labels. Use words 
-rather than symbols or abbreviations when writing Figure axis labels to 
-avoid confusing the reader. As an example, write the quantity 
-``Magnetization'', or ``Magnetization, M'', not just ``M''. If including 
-units in the label, present them within parentheses. Do not label axes only 
-with units. In the example, write ``Magnetization (A/m)'' or ``Magnetization 
-\{A[m(1)]\}'', not just ``A/m''. Do not label axes with a ratio of 
-quantities and units. For example, write ``Temperature (K)'', not 
-``Temperature/K''.
+%Figure Labels: Use 8 point Times New Roman for Figure labels. Use words 
+%rather than symbols or abbreviations when writing Figure axis labels to 
+%avoid confusing the reader. As an example, write the quantity 
+%``Magnetization'', or ``Magnetization, M'', not just ``M''. If including 
+%units in the label, present them within parentheses. Do not label axes only 
+%with units. In the example, write ``Magnetization (A/m)'' or ``Magnetization 
+%\{A[m(1)]\}'', not just ``A/m''. Do not label axes with a ratio of 
+%quantities and units. For example, write ``Temperature (K)'', not 
+%``Temperature/K''.
 
 \begin{thebibliography}{00}
 \bibitem{b1} F. Wijayanto, “Clustering Analysis of Chess Portable Game Notation Text,” Jurnal Sains, Nalar, Dan Aplikasi Teknologi Informasi, vol. 3, no. 3, pp. 137–142, 2024.
