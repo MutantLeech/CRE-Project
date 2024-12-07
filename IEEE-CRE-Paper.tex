@@ -56,35 +56,35 @@ The importance of this problem lies in its potential to enhance player developme
 \item How your work differs/improves upon prior work
 \end{itemize}
 
-\subsection{Make it your own}\label{AA}
-Define abbreviations and acronyms the first time they are used in the text, 
-even after they have been defined in the abstract. Abbreviations such as 
-IEEE, SI, MKS, CGS, ac, dc, and rms do not have to be defined. Do not use 
-abbreviations in the title or heads unless they are unavoidable.
-
-\subsection{Make it your own}
-\begin{itemize}
-\item Use either SI (MKS) or CGS as primary units.
-\item Avoid combining SI and CGS units,
-\item Do not mix complete spellings 
-\item Use a zero before decimal points:
-\end{itemize}
-
-\subsection{Make it your own}
-Number equations consecutively. To make your 
-equations more compact, you may use the solidus (~/~), the exp function, or 
-appropriate exponents. Italicize Roman symbols for quantities and variables, 
-but not Greek symbols. Use a long dash rather than a hyphen for a minus 
-sign. Punctuate equations with commas or periods when they are part of a 
-sentence, as in:
-\begin{equation}
-a+b=\gamma\label{eq}
-\end{equation}
-
-Be sure that the 
-symbols in your equation have been defined before or immediately following 
-the equation. Use ``\eqref{eq}'', not ``Eq.~\eqref{eq}'' or ``equation \eqref{eq}'', except at 
-the beginning of a sentence: ``Equation \eqref{eq} is . . .''
+%\subsection{Make it your own}\label{AA}
+%Define abbreviations and acronyms the first time they are used in the text, 
+%even after they have been defined in the abstract. Abbreviations such as 
+%IEEE, SI, MKS, CGS, ac, dc, and rms do not have to be defined. Do not use 
+%abbreviations in the title or heads unless they are unavoidable.
+%
+%\subsection{Make it your own}
+%\begin{itemize}
+%\item Use either SI (MKS) or CGS as primary units.
+%\item Avoid combining SI and CGS units,
+%\item Do not mix complete spellings 
+%\item Use a zero before decimal points:
+%\end{itemize}
+%
+%\subsection{Make it your own}
+%Number equations consecutively. To make your 
+%equations more compact, you may use the solidus (~/~), the exp function, or 
+%appropriate exponents. Italicize Roman symbols for quantities and variables, 
+%but not Greek symbols. Use a long dash rather than a hyphen for a minus 
+%sign. Punctuate equations with commas or periods when they are part of a 
+%sentence, as in:
+%\begin{equation}
+%a+b=\gamma\label{eq}
+%\end{equation}
+%
+%Be sure that the 
+%symbols in your equation have been defined before or immediately following 
+%the equation. Use ``\eqref{eq}'', not ``Eq.~\eqref{eq}'' or ``equation \eqref{eq}'', except at 
+%the beginning of a sentence: ``Equation \eqref{eq} is . . .''
 
 \section{Methodology}
 \subsection{Data Collection and Preprocessing}
@@ -99,6 +99,18 @@ The preprocessing steps include splitting each game's metadata and move sequence
 
 The cleaned data consist of three key features for each game: the White player's Elo rating, the number of moves made during the game, and the game results (encoded as 0, 0.5, or 1 for black win, draw, or white win, respectively)
 
+Portable Game Notation (PGN) text comes in the form of several tags, each a key-value pair enclosed within square brackets, and a list of moves with a counter of how many full turns have passed. Since the text is already mainly of the form of key-value pairs, we read each one into a dictionary, with the moves coming after being added with the key "Moves."
+
+The second step is to isolate the data we need from the rest: The Elo ratings of the players, the result of the match-up, and the list of moves. While the Elo ratings and the result are their own tags and can be easily isolated, the moves require a bit of cleaning to be usable:
+1. We remove all the turn counters so that only the move text is left.
+2. Comments, denoted by curly braces, are for human eyes only, and are also removed.
+3. Any other text which is not part of a move is removed with a regular expression substitution. This removes additional information like the exclamation points on brilliant moves and the question marks on blunders, to maintain the purity of the text.
+4. Any extended lengths of whitespace left behind are condensed to one.
+
+As an additional angle to attempt, we use the chess-python library to also convert these PGN moves to UCI moves, which are only denoted by the square moved from concatenated with the square moved to.
+
+Every game is also condensed into a simple tuple of data to run additional measurements upon, consisting of just the White player's Elo rating, the length of the game in full moves, and the result of the game.
+
 \subsection{Feature Extraction}
 
 The feature extraction process focuses on simplifying and organizing the data for use in clustering algorithms. The extracted features include:
@@ -109,6 +121,8 @@ The feature extraction process focuses on simplifying and organizing the data fo
 \end{itemize}
 The moves are split into individual actions, and each game's result is encoded to represent the player's performance, either as a win, loss, or draw.
 
+For the purposes of measurement, Elo ratings are grouped into bins of width 100, with e.g. the 700s bin holding all games where the White player had an Elo rating between 700 and 799, inclusive. We record the number of games in each bin, as well as how many were wins, draws, or losses.
+
 %this can be moved around to wherever
 \begin{figure}[htbp]
 \centerline{\includegraphics[scale=0.5]{Distribution and Win-Loss Proportion by ELO.png}}
@@ -116,6 +130,8 @@ The moves are split into individual actions, and each game's result is encoded t
 Win/Loss/Draw Proportions vs. ELO Rating (bottom): A stacked area chart visualizing the proportions of wins (green), losses (red), and draws (gray) for each ELO rating range.}
 \label{fig}
 \end{figure}
+
+In terms of the distribution of games, it appears to closely follow a normal distribution (or a unimodal distribution of slight positive skew). Games in the range of 1400 to 1799 make up approximately 58\% of the dataset. There is a very clear positive correlation between Elo rating and win percentage, indicating that players with high Elo ratings win more of their games.
 
 \subsection{Clustering Implementation}
  The cleaned dataset is used to group games based on player performance. The program applies the k-means clustering algorithm, leveraging Elo ratings as the primary axis for separation. Key steps include:
@@ -175,7 +191,45 @@ below the figures; table heads should appear above the tables. Insert
 figures and tables after they are cited in the text. Use the abbreviation 
 ``Fig.~\ref{fig}'', even at the beginning of a sentence.
 
-\section{results and discussion}
+Before attempting any sort of classification, we first remove the top and bottom 1\% of data for the purpose of removing any outliers. Games are then grouped by Elo rating into groups of 500, normalized so that the group containing the least experienced players is group 0.
+
+We use a combination of a variety of classification techniques on both the PGN moves and the UCI moves to see which are best suited for the task. Each combination will be represented with a set of 3 symbols, to be appended to the document set used.
+- We compare and contrast two kinds of vectorizers. The first is a TF-IDF vectorization, with the idea being that players of a certain skill level will tend towards certain moves which can be used to distinguish them. The second is a vectorization to word counts as a baseline. It's important to make sure that the vectorizer does not force the text to lowercase; It doesn't matter with UCI, but PGN text has integral capitalization which needs to be preserved. This toggle is the first symbol of the set; TF-IDF vectorization will use T as its symbol, and word count vectorization will use C.
+- The data then needs to be split into a training group and a test group. 75\% of the data will be used to train the classifiers, and the remaining 25\% will be used to test their accuracy. The imbalance of the initial dataset is exaggerated with the increase in group size, so we additionally see how stratifying the data so that each class is equally represented affects the accuracy. If the data is stratified, the second symbol will be 1, and if not, it will be 0.
+- Two kinds of Naive-Bayes classifiers are used to attempt to model and predict the data. First is a Multinomial Naive-Bayes (MNB) classification, and the second is a Complement Naive-Bayes (CNB) classification. CNB is designed to take the complement of each class for its weights, and is suited to imbalanced datasets. Theoretically, CMB will perform better than MNB due to the imbalance of the dataset it will be given. MNB will be M, CMB will be C.
+
+As an example, UCI text which is treated to a TF-IDF vectorization, stratified data, and Complement Naive-Bayes classification will be represented as "UCI-T1C."
+
+\section{Results and Discussion}
+
+PGN-T1M: 62.232389\%
+PGN-T1C: 55.505847\%
+PGN-T0M: 62.264947\%
+PGN-T0C: 55.520559\%
+PGN-C1M: 57.755987\%
+PGN-C1C: 55.037731\%
+PGN-C0M: 57.753334\%
+PGN-C0C: 55.062090\%
+
+UCI-T1M: 62.297264\%
+UCI-T1C: 55.598699\%
+UCI-T0M: 62.330305\%
+UCI-T0C: 55.622575\%
+UCI-C1M: 56.749333\%
+UCI-C1C: 54.837317\%
+UCI-C0M: 56.740892\%
+UCI-C0C: 54.786912\%
+
+\subsection{Overall}
+
+On PGN text, the highest accuracy is 62.26\%, with the Multinomial Naive-Bayes classifier, unstratified data splits, and the TF-IDF vectorizer (PGN-T0M). These same settings produce the highest accuracy for UCI text as well, at 62.33\% (UCI-T0M).
+
+\subsection{Trends}
+
+Some trends appear in regards to how specific choices affect the average accuracy of the predictions.
+- Generally, classification is improved by using TF-IDF vectorization over word count vectorization, with MNB losing approximately 5-6\% accuracy when switching between the two and CMB losing 0.5-0.9\%.
+- Strafitication affected accuracy very little, with the random sampling picking approximately the same frequency of classes as the guaranteed frequencies enforced by stratification. In most cases, not using stratification increased overall accuracy by a few hundredths of a percentage point, except when using UCI text with word count vectorization, in which case accuracy decreases approxumately 0.01\% with MNB and 0.05\% with CMB.
+- Against expectations, Multinomial Naive-Bayes outperforms Complement Naive-Bayes in all cases, being approximately 7\% more accurate with TD-IDF vectorization and 2\% more accurate with word count vectorization.
 
 \section{Conclusion}
 
