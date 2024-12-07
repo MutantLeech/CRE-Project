@@ -1,0 +1,192 @@
+CLASSIFICATION DETAILS:
+	Document set: PGN
+	Vectorizer:  TfidfVectorizer
+	Stratified: True
+	Classifier: MultinomialNB
+Accuracy score: 62.232389%
+	Total: 258041 / 414641
+	  Group 0: 0 / 1961
+	  Group 1: 3070 / 126374
+	  Group 2: 254970 / 256311
+	  Group 3: 1 / 29678
+	  Group 4: 0 / 317
+CLASSIFICATION DETAILS:
+	Document set: PGN
+	Vectorizer:  TfidfVectorizer
+	Stratified: True
+	Classifier: ComplementNB
+Accuracy score: 55.505847%
+	Total: 230150 / 414641
+	  Group 0: 13 / 1961
+	  Group 1: 79193 / 126374
+	  Group 2: 148847 / 256311
+	  Group 3: 2097 / 29678
+	  Group 4: 0 / 317
+CLASSIFICATION DETAILS:
+	Document set: PGN
+	Vectorizer:  TfidfVectorizer
+	Stratified: False
+	Classifier: MultinomialNB
+Accuracy score: 62.264947%
+	Total: 258176 / 414641
+	  Group 0: 0 / 1960
+	  Group 1: 3001 / 126284
+	  Group 2: 255175 / 256457
+	  Group 3: 0 / 29628
+	  Group 4: 0 / 312
+CLASSIFICATION DETAILS:
+	Document set: PGN
+	Vectorizer:  TfidfVectorizer
+	Stratified: False
+	Classifier: ComplementNB
+Accuracy score: 55.520559%
+	Total: 230211 / 414641
+	  Group 0: 7 / 1960
+	  Group 1: 78970 / 126284
+	  Group 2: 149071 / 256457
+	  Group 3: 2163 / 29628
+	  Group 4: 0 / 312
+CLASSIFICATION DETAILS:
+	Document set: PGN
+	Vectorizer:  CountVectorizer
+	Stratified: True
+	Classifier: MultinomialNB
+Accuracy score: 57.755987%
+	Total: 239480 / 414641
+	  Group 0: 210 / 1961
+	  Group 1: 54995 / 126374
+	  Group 2: 179505 / 256311
+	  Group 3: 4769 / 29678
+	  Group 4: 1 / 317
+CLASSIFICATION DETAILS:
+	Document set: PGN
+	Vectorizer:  CountVectorizer
+	Stratified: True
+	Classifier: ComplementNB
+Accuracy score: 55.037731%
+	Total: 228209 / 414641
+	  Group 0: 9 / 1961
+	  Group 1: 81738 / 126374
+	  Group 2: 143916 / 256311
+	  Group 3: 2546 / 29678
+	  Group 4: 0 / 317
+CLASSIFICATION DETAILS:
+	Document set: PGN
+	Vectorizer:  CountVectorizer
+	Stratified: False
+	Classifier: MultinomialNB
+Accuracy score: 57.753334%
+	Total: 239469 / 414641
+	  Group 0: 210 / 1960
+	  Group 1: 55060 / 126284
+	  Group 2: 179475 / 256457
+	  Group 3: 4722 / 29628
+	  Group 4: 2 / 312
+CLASSIFICATION DETAILS:
+	Document set: PGN
+	Vectorizer:  CountVectorizer
+	Stratified: False
+	Classifier: ComplementNB
+Accuracy score: 55.062090%
+	Total: 228310 / 414641
+	  Group 0: 6 / 1960
+	  Group 1: 81608 / 126284
+	  Group 2: 144125 / 256457
+	  Group 3: 2571 / 29628
+	  Group 4: 0 / 312
+CLASSIFICATION DETAILS:
+	Document set: UCI
+	Vectorizer:  TfidfVectorizer
+	Stratified: True
+	Classifier: MultinomialNB
+Accuracy score: 62.297264%
+	Total: 258310 / 414641
+	  Group 0: 0 / 1961
+	  Group 1: 3670 / 126374
+	  Group 2: 254640 / 256311
+	  Group 3: 0 / 29678
+	  Group 4: 0 / 317
+CLASSIFICATION DETAILS:
+	Document set: UCI
+	Vectorizer:  TfidfVectorizer
+	Stratified: True
+	Classifier: ComplementNB
+Accuracy score: 55.598699%
+	Total: 230535 / 414641
+	  Group 0: 8 / 1961
+	  Group 1: 79349 / 126374
+	  Group 2: 148867 / 256311
+	  Group 3: 2311 / 29678
+	  Group 4: 0 / 317
+CLASSIFICATION DETAILS:
+	Document set: UCI
+	Vectorizer:  TfidfVectorizer
+	Stratified: False
+	Classifier: MultinomialNB
+Accuracy score: 62.330305%
+	Total: 258447 / 414641
+	  Group 0: 0 / 1960
+	  Group 1: 3676 / 126284
+	  Group 2: 254771 / 256457
+	  Group 3: 0 / 29628
+	  Group 4: 0 / 312
+CLASSIFICATION DETAILS:
+	Document set: UCI
+	Vectorizer:  TfidfVectorizer
+	Stratified: False
+	Classifier: ComplementNB
+Accuracy score: 55.622575%
+	Total: 230634 / 414641
+	  Group 0: 6 / 1960
+	  Group 1: 79232 / 126284
+	  Group 2: 149095 / 256457
+	  Group 3: 2301 / 29628
+	  Group 4: 0 / 312
+CLASSIFICATION DETAILS:
+	Document set: UCI
+	Vectorizer:  CountVectorizer
+	Stratified: True
+	Classifier: MultinomialNB
+Accuracy score: 56.749333%
+	Total: 235306 / 414641
+	  Group 0: 278 / 1961
+	  Group 1: 56670 / 126374
+	  Group 2: 173120 / 256311
+	  Group 3: 5235 / 29678
+	  Group 4: 3 / 317
+CLASSIFICATION DETAILS:
+	Document set: UCI
+	Vectorizer:  CountVectorizer
+	Stratified: True
+	Classifier: ComplementNB
+Accuracy score: 54.837317%
+	Total: 227378 / 414641
+	  Group 0: 8 / 1961
+	  Group 1: 82758 / 126374
+	  Group 2: 141898 / 256311
+	  Group 3: 2714 / 29678
+	  Group 4: 0 / 317
+CLASSIFICATION DETAILS:
+	Document set: UCI
+	Vectorizer:  CountVectorizer
+	Stratified: False
+	Classifier: MultinomialNB
+Accuracy score: 56.740892%
+	Total: 235271 / 414641
+	  Group 0: 290 / 1960
+	  Group 1: 56592 / 126284
+	  Group 2: 173101 / 256457
+	  Group 3: 5284 / 29628
+	  Group 4: 4 / 312
+CLASSIFICATION DETAILS:
+	Document set: UCI
+	Vectorizer:  CountVectorizer
+	Stratified: False
+	Classifier: ComplementNB
+Accuracy score: 54.786912%
+	Total: 227169 / 414641
+	  Group 0: 6 / 1960
+	  Group 1: 82603 / 126284
+	  Group 2: 141822 / 256457
+	  Group 3: 2738 / 29628
+	  Group 4: 0 / 312
