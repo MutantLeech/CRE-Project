@@ -9,6 +9,9 @@
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
+
+\usepackage{hyperref}
+
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
@@ -29,8 +32,6 @@ lmiller2@ltu.edu}
 \textit{Lawrence Technological University}\\
 Southfield, MI, USA \\
 rwilson2@ltu.edu}
-
-
 }
 
 \maketitle
@@ -40,13 +41,13 @@ Make this a summarization of your paper.Make this a summarization of your paper.
 \end{abstract}
 
 \begin{IEEEkeywords}
-PGN, Clustering, Chess.
+PGN, Clustering, Classification, Chess, Naive-Bayes, K-means.
 \end{IEEEkeywords}
 
 \section{Introduction}
 Chess is one of the oldest and most universally played strategy games, and with the advent of online platforms like chess.com, millions of games are now available for analysis. These platforms generate a wealth of data, which presents an opportunity to gain insights into player behavior, skill levels, and strategies. However, analyzing such large datasets to extract meaningful patterns remains a challenge. While traditional methods often focus on broad metrics like Elo ratings, they fail to account for the nuanced differences in play styles and strategies that define various skill levels. This paper aims to address this gap by employing machine learning techniques, specifically clustering, to categorize chess games based on player skill levels and game play characteristics, offering a more granular understanding of player performance.
 
-The importance of this problem lies in its potential to enhance player development, improve training tools, and refine chess engines. Automatically classifying games by skill level can provide valuable feedback to players, enabling personalized improvement suggestions. Additionally, it offers coaches and analysts a more detailed view of game play, which can inform training strategies. The key challenges in this task include handling the complex, high-dimensional nature of chess data and identifying relevant features that effectively differentiate skill levels. The main contribution of this work is a novel clustering approach that groups games based on Elo ratings, move length, and game result, providing deeper insights into the relationship between game play and player expertise.
+The importance of this problem lies in its potential to enhance player development, improve training tools, and refine chess engines. Automatically classifying games by skill level can provide valuable feedback to players, enabling personalized improvement suggestions. Additionally, it offers coaches and analysts a more detailed view of game play, which can inform training strategies. The key challenges in this task include handling the complex, high-dimensional nature of chess data and identifying relevant features that effectively differentiate skill levels. One of the two main contributions of this work is a novel clustering approach that groups games based on Elo ratings, move length, and game result, providing deeper insights into the relationship between game play and player expertise. The other contribution is an insight into how text classification techniques fare on 
 
 \section{Related Work}
 \begin{itemize}
@@ -88,13 +89,22 @@ The importance of this problem lies in its potential to enhance player developme
 
 \section{Methodology}
 \subsection{Data Collection and Preprocessing}
-To gather the data about the different chess games there is a website https://database.lichess.org/ that is filled with different games with different levels of players. the data includes the move sequences, player ratings, game outcomes, and other metadata, which provides the foundation for clustering analysis. The data is cleaned by removing games with non-standard variants, incomplete results, or missing Elo ratings.
+Lichess.com is a popular online chess website where millions of games are played daily. These games are recorded and hosted at \href{https://database.lichess.org/}{database.lichess.org} under the Creative Commons CC0 license. We select the August 2015 selection of games to balance storage space with game selection: The Portable Game Notation format files uncompress to 7 times the file size, but there are over 2.6 million games across all skill levels to work with.
 
-Original data can be accessed under the open database at Lichess.org. This is a very good source of raw record data for chess games, such as several billion games within the Lichess platform. It maintains metadata about the players' ratings, time controls, and outcomes, along with full move sequences in PGN format. The database is a treasure for research due to its size, diversity, and good accessibility; material on most types of games and all skill levels from beginners through grandmasters is covered.
+Portable Game Notation (PGN) text comes in the form of several tags, each a key-value pair enclosed within square brackets, and a list of moves with a counter of how many full turns have passed. Since the text is already mainly of the form of key-value pairs, we read each one into a dictionary, with the moves coming after being added with the key "Moves."
 
-In this project, only a subset of the data will be selected to demonstrate how some standard features like Rating, Total Move Count, and Outcome enable some effective clustering analysis. The data is already in structured PGN format; therefore, parsing and feature extraction will be easier. It will be ideal for exploring patterns and trends occurring in the play of chess.
+%To gather the data about the different chess games there is a website https://database.lichess.org/ that is filled with different games with different levels of players. the data includes the move sequences, player ratings, game outcomes, and other metadata, which provides the foundation for clustering analysis. The data is cleaned by removing games with non-standard variants, incomplete results, or missing Elo ratings.
+%
+%Original data can be accessed under the open database at Lichess.org. This is a very good source of raw record data for chess games, such as several billion games within the Lichess platform. It maintains metadata about the players' ratings, time controls, and outcomes, along with full move sequences in PGN format. The database is a treasure for research due to its size, diversity, and good accessibility; material on most types of games and all skill levels from beginners through grandmasters is covered.
 
-This is documented in greater detail below, especially in Table \ref{example-games}, which outlines the structure and content of the files that make up the dataset.
+Not every game furnished in this file is appropriate for our purposes, however; Some may be variant games, some may not have the Elo rating of one or both players, or feature other such issues. We first check that each game is acceptable for our purposes by checking them against 4 criteria:
+\begin{enumerate}
+    \item The game must be a standard chess game (no variants).
+    \item The game must have terminated normally (i.e. via checkmate).
+    \item The game must have a normal result (1-0 White win, 0-1 Black win, 1/2-1/2 draw).
+    \item The game must have valid Elo ratings for both players.
+\end{enumerate}
+If the game features meets all of these criteria, we include it in our dataset.
 
 \begin{table}[htbp]
 \vspace{.01cm}
@@ -109,50 +119,27 @@ This is documented in greater detail below, especially in Table \ref{example-gam
 \end{tabular}
 \begin{minipage}{8cm}
     \vspace{0.1cm}
-    \small The table above shows 2 games from the dataset showing the player names, the result of the game, and each player elo. there is other data included within the file but most of it is nonsense.
+    \small The table above shows 2 games from the dataset showing the player names, the result of the game, and each player's Elo rating.
 \end{minipage}
 \end{center}
 \label{example-games}
 \end{table}
 
-The preprocessing steps include splitting each game's metadata and move sequences, then filtering out games that do not meet the following criteria:
-\begin{itemize}
-    \item The game must be a standard chess game (no variants).
-    \item The game must have a normal termination and result.
-    \item The game must have valid Elo ratings for both players.
-\end{itemize}
-
-The cleaned data consist of three key features for each game: the White player's Elo rating, the number of moves made during the game, and the game results (encoded as 0, 0.5, or 1 for black win, draw, or white win, respectively)
-
-Portable Game Notation (PGN) text comes in the form of several tags, each a key-value pair enclosed within square brackets, and a list of moves with a counter of how many full turns have passed. Since the text is already mainly of the form of key-value pairs, we read each one into a dictionary, with the moves coming after being added with the key "Moves."
-
-The second step is to isolate the data we need from the rest: The Elo ratings of the players, the result of the match-up, and the list of moves. While the Elo ratings and the result are their own tags and can be easily isolated, the moves require a bit of cleaning to be usable:
-1. We remove all the turn counters so that only the move text is left.
-2. Comments, denoted by curly braces, are for human eyes only, and are also removed.
-3. Any other text which is not part of a move is removed with a regular expression substitution. This removes additional information like the exclamation points on brilliant moves and the question marks on blunders, to maintain the purity of the text.
-4. Any extended lengths of whitespace left behind are condensed to one.
-
-As an additional angle to attempt, we use the chess-python library to also convert these PGN moves to UCI moves, which are only denoted by the square moved from concatenated with the square moved to.
-
-Every game is also condensed into a simple tuple of data to run additional measurements upon, consisting of just the White player's Elo rating, the length of the game in full moves, and the result of the game.
-
 \subsection{Feature Extraction}
 
-The feature extraction process focuses on simplifying and organizing the data for use in clustering algorithms. The extracted features include:
-\begin{itemize}
-    \item Player Elo ratings: The rating of the white and black players
-    \item Move length: The total number of moves made during the game.
-    \item Game result: The outcome of the game, is represented numerically for clustering purposes.
-\end{itemize}
-The moves are split into individual actions, and each game's result is encoded to represent the player's performance, either as a win, loss, or draw.
+While a large amount of information is included in each PGN game, we only need a certain subset of data from each: The Elo ratings of the players, the result of the match-up, and the list of moves. While the Elo ratings and the result are their own tags and can be easily isolated, the moves require a bit of cleaning to be usable, removing all the turn counters, comments, and additional characters, as well as reducing whitespace. Deleting additional characters is important as it removes additional information like the exclamation points on brilliant moves and the question marks on blunders, to maintain the purity of the text.
+
+As an additional angle to attempt, we use the chess-python library to also convert these PGN moves to moves in the format of the Universal Chess Interface (UCI), which are only denoted by the square moved from concatenated with the square moved to.
+
+Every game is also condensed into a simple tuple of data to run additional measurements upon, consisting of just the White player's Elo rating, the length of the game in full moves, and the result of the game. This is documented in greater detail in Table \ref{example-games}, which outlines the structure and content of the files that make up the dataset.
 
 For the purposes of measurement, Elo ratings are grouped into bins of width 100, with e.g. the 700s bin holding all games where the White player had an Elo rating between 700 and 799, inclusive. We record the number of games in each bin, as well as how many were wins, draws, or losses.
 
 %this can be moved around to wherever
 \begin{figure}[htbp]
-\centerline{\includegraphics[scale=0.5]{Distribution and Win-Loss Proportion by ELO.png}}
-\caption{Games Played vs. ELO Rating Bins (top): A bar chart showing the number of games played in each ELO rating range.
-Win/Loss/Draw Proportions vs. ELO Rating (bottom): A stacked area chart visualizing the proportions of wins (green), losses (red), and draws (gray) for each ELO rating range.}
+\centerline{\includegraphics[scale=0.5]{Distribution and Win-Loss Proportion by Elo.png}}
+\caption{Games Played vs. Elo Rating Bins (top): A bar chart showing the number of games played in each Elo rating range.
+Win/Loss/Draw Proportions vs. Elo Rating (bottom): A stacked area chart visualizing the proportions of wins (green), losses (red), and draws (gray) for each Elo rating range.}
 \label{fig}
 \end{figure}
 
@@ -161,15 +148,17 @@ In terms of the distribution of games, it appears to closely follow a normal dis
 \subsection{Clustering Implementation}
  The cleaned dataset is used to group games based on player performance. The program applies the k-means clustering algorithm, leveraging Elo ratings as the primary axis for separation. Key steps include:
 \begin{itemize}
-    \item Determining the number of clusters(k): Using silhouette scores, the optimal value for k is selected, ensuring well-defined groupings.
+    \item Determining the number of clusters (k): Using silhouette scores, the optimal value for k is selected, ensuring well-defined groupings.
     \item Running k-means: the algorithm partitions the data into clusters, where each cluster represents a subset of games with similar Elo ranges and gameplay characteristics.
 \end{itemize}
 
 \subsection{Statistical Analysis and Visualization}
 After clustering the dataset, statistical analyses and visualization are performed to interpret the relationship between Elo ratings, game results, and gameplay patterns. these analyses highlight trends across different skill levels and provide actionable insight into the dataset.
 
-
 \section{Experimental Setup}
+
+\subsection{Implementation Details}
+The PGN clustering project has been devEloped in Python using the libraries: numpy for numerical operations, matplotlib for visualization, and sklearn to apply k-means clustering. For PGN elaboration, a personal parser has been used to extract relevant features from each match: players' ratings, total moves, and game outcomes. Then, data normalization was performed for correct clustering, while missing values were treated by deleting incomplete games. Therefore, k-means implementation was employed for the structured dataset, while the number of clusters was determined by the elbow method and silhouette score for the best performance. All the computations have been done on the free version of Google Colab, where computational resources were good enough to run this clustering analysis, though sometimes very limiting regarding duration and hardware.
 
 \subsection{Evaluation Metrics}
 Quality clustering for the PGN project was made using some different metrics; among them, the most important was the silhouette score since this score gives a measure of how well the clusters are kept apart, and how well the game fits within its assigned cluster. In that way, clusters reflect real differences in either the level of players or their style of play. Additionally, inertia (within-cluster sum of squares) was used to evaluate the compactness of data points within clusters. Cluster size distribution was analyzed to identify any imbalances or outliers affecting the clustering process. To ensure the clusters' interpretability, we compared results against logical groupings, such as player rating ranges or typical game lengths, confirming that the clusters provided insight into game dynamics. These also allow us to assess the performance of our approach against overall simpler baselines such as rating-only clustering.
@@ -177,21 +166,16 @@ Quality clustering for the PGN project was made using some different metrics; am
 \subsection{Baseline}
 The baselines were necessary for giving a comparison to the effectiveness of the clustering methodology on PGN data. A simple baseline entails the grouping of chess games regarding players' ratings into pre-defined ranges of cut-off, for instance, beginning, intermediate, and advanced players. This was a simplified comparison that didn't give a deep scope on how other features such as game length and its outcome interact. Other baselines were k-means clustering on fewer features for further benchmark performance checks. Comparing those with our multi-feature clustering methodology, we could then illustrate the advantages of integrating diverse features for nuanced gameplay. Since we were on the free version of Google Colab, runtime and memory needed to be optimized for baseline testing to do efficient experiments within resource bounds.
 
-\subsection{Implementation Details}
-The PGN clustering project has been developed in Python using the libraries: numpy for numerical operations, matplotlib for visualization, and sklearn to apply k-means clustering. For PGN elaboration, a personal parser has been used to extract relevant features from each match: players' ratings, total moves, and game outcomes. Then, data normalization was performed for correct clustering, while missing values were treated by deleting incomplete games. Therefore, k-means implementation was employed for the structured dataset, while the number of clusters was determined by the elbow method and silhouette score for the best performance. All the computations have been done on the free version of Google Colab, where computational resources were good enough to run this clustering analysis, though sometimes very limiting regarding duration and hardware.
-
 \subsection{Hyperparameters}
-The hyperparameters in this program are tuned carefully to optimize the clustering and feature extraction performance of the chess games. For the k-means clustering algorithm, the most important hyperparameter was the number of clusters derived from the unique groups of ELO rating determined by the program. This made sure that the grouping of the skill levels of players was logical. We varied the RESOLUTION parameter from this model to 500, which grouped the ELO ratings into bins of 500, thus affecting clustering granularity. The preprocessing feature extraction also went through a TF-IDF vectorizer where, among its parameters, tokenization and stopword filtering were developed focusing on dealing with the densest pieces of text data. These hyperparameters control parsing data, such as GAME LIMIT, but also optional flags like DOUBLE GAMES. These balance the volume and variety of preprocessed data for scalability but still meaningful results. These have been iteratively tuned through testing to balance performance with computational efficiency.
+The hyperparameters in this program are tuned carefully to optimize the clustering and feature extraction performance of the chess games. For the k-means clustering algorithm, the most important hyperparameter was the number of clusters derived from the unique groups of Elo rating determined by the program. This made sure that the grouping of the skill levels of players was logical. We varied the RESOLUTION parameter from this model to 500, which grouped the Elo ratings into bins of 500, thus affecting clustering granularity. The preprocessing feature extraction also went through a TF-IDF vectorizer where, among its parameters, tokenization and stopword filtering were devEloped focusing on dealing with the densest pieces of text data. These hyperparameters control parsing data, such as GAME LIMIT, but also optional flags like DOUBLE GAMES. These balance the volume and variety of preprocessed data for scalability but still meaningful results. These have been iteratively tuned through testing to balance performance with computational efficiency.
 
-
-\subsection{Figures and Tables}\label{}
-\paragraph{Positioning Figures and Tables} Place figures and tables at the top and 
-bottom of columns. Avoid placing them in the middle of columns. Large 
-figures and tables may span across both columns. Figure captions should be 
-below the figures; table heads should appear above the tables. Insert 
-figures and tables after they are cited in the text. Use the abbreviation 
-``Fig.~\ref{fig}'', even at the beginning of a sentence.
-
+%\subsection{Figures and Tables}\label{}
+%\paragraph{Positioning Figures and Tables} Place figures and tables at the top and 
+%bottom of columns. Avoid placing them in the middle of columns. Large 
+%figures and tables may span across both columns. Figure captions should be 
+%bElow the figures; table heads should appear above the tables. Insert 
+%figures and tables after they are cited in the text. Use the abbreviation 
+%``Fig.~\ref{fig}'', even at the beginning of a sentence.
 Before attempting any sort of classification, we first remove the top and bottom 1\% of data for the purpose of removing any outliers. Games are then grouped by Elo rating into groups of 500, normalized so that the group containing the least experienced players is group 0.
 
 We use a combination of a variety of classification techniques on both the PGN moves and the UCI moves to see which are best suited for the task. Each combination will be represented with a set of 3 symbols, to be appended to the document set used.
@@ -205,6 +189,9 @@ As an example, UCI text which is treated to a TF-IDF vectorization, stratified d
 
 \section{Results and Discussion}
 
+\subsection{Clustering}
+
+\subsection{Classification}
 \begin{table}[]
 \caption{Classification Accuracy by Method Group}
 \centering
