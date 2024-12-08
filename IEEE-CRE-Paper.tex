@@ -39,7 +39,7 @@ rwilson2@ltu.edu}
 \begin{abstract}
 This paper discusses using machine learning techniques on chess play analysis and players' skill levels, developing further from the inadequateness of traditional Elo-based metrics. By utilizing a dataset comprising several million chess games, this research applies k-means clustering to group games based on player ratings, move lengths, and their outcomes, revealing unique patterns across skill levels. It also uses Naive-Bayes classification to predict player Elo ratings from the moves and metadata of the games with striking accuracy.
 
-These results really outline the power of incorporating diverse features with advanced methodologies for the extraction of deeper insights into player performance and gameplay dynamics. The key takeaways indicate that multi-feature clustering is effective for nuanced differences in the skill level and classification methods are useful in predicting performance. These advances open avenues for enhanced player training, personal feedback, and improvements in the chess engine. Future studies may add more features and symptom links and optimize different algorithms for better performance.
+These results outline the power of incorporating diverse features with advanced methodologies for the extraction of deeper insights into player performance and gameplay dynamics. The key takeaways indicate that multi-feature clustering is effective for nuanced differences in the skill level and classification methods are useful in predicting performance. These advances open avenues for enhanced player training, personal feedback, and improvements in the chess engine. Future studies may add more features and symptom links and optimize different algorithms for better performance.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -120,7 +120,7 @@ In terms of the distribution of games, it appears to closely follow a normal dis
  The cleaned dataset is used to group games based on player performance. The program applies the k-means clustering algorithm, leveraging Elo ratings as the primary axis for separation. Key steps include:
 \begin{itemize}
     \item Determining the number of clusters (k): Using silhouette scores, the optimal value for k is selected, ensuring well-defined groupings.
-    \item Running k-means: the algorithm partitions the data into clusters, where each cluster represents a subset of games with similar Elo ranges and gameplay characteristics.
+    \item Running k-means: The algorithm partitions the data into clusters, where each cluster represents a subset of games with similar Elo ranges and gameplay characteristics. The implementation used is Lloyd's algorithm. \cite{b5}
 \end{itemize}
 
 K-means clustering does have some limitations as detailed in \cite{b4}, but the dataset used helps mitigate some of these: The density of the data is relatively dense within the 100-Elo bins, and the meticulous task of selecting a good value for k is greatly sped along via computation of silhouette score and examination of elbow curves.
