@@ -53,7 +53,7 @@ The importance of this problem lies in its potential to enhance player developme
 
 \section{Related Work}
 \subsection{Chess Text Clustering}
-There have been more focused studies into chess text clustering. Such studies are  limitations such as testing on specific sets of opening moves \cite{b1}\cite{b2}. Our work is intended to encompass the whole of a game, including its ending, to determine similarity between games in the same skill level.
+There have been more focused studies into chess text clustering. Such studies have limitations such as testing on specific sets of opening moves \cite{b1}\cite{b2}. Our work is intended to encompass the whole of a game, including its ending, to determine similarity between games in the same skill level.
 \subsection{Behavioral Clustering}
 Using machine learning to identify player behavioral patterns is a well-trodden path. \cite{b3} is a meta-analysis on the topic, describing several reasonings for certain techniques to be used, with \cite{b7} and \cite{b8} showing various techniques in action, for already established games and those which are still growing, respectively. A chess-related extreme case is shown in \cite{b10}, in which the authors train models to identify players by their playstyle, including their mistakes.
 
@@ -62,11 +62,7 @@ Using machine learning to identify player behavioral patterns is a well-trodden 
 \subsection{Data Collection and Preprocessing}
 Lichess.com is a popular online chess website where millions of games are played daily. These games are recorded and hosted at \href{https://database.lichess.org/}{database.lichess.org} under the Creative Commons CC0 license. We select the August 2015 selection of games to balance storage space with game selection: The Portable Game Notation format files uncompress to 7 times the file size, but there are over 2.6 million games across all skill levels to work with.
 
-Portable Game Notation (PGN) is a format for the collection and storage of chess games in a manner that is easy to read for both computers and humans. \cite{b9} PGN text comes in the form of several tags, each a key-value pair enclosed within square brackets, and a list of moves in algebraic notation with a counter of how many full turns have passed. Since the text is already mainly of the form of key-value pairs, we read each one into a dictionary, with the moves coming after being added with the key "Moves."
-
-%To gather the data about the different chess games there is a website https://database.lichess.org/ that is filled with different games with different levels of players. the data includes the move sequences, player ratings, game outcomes, and other metadata, which provides the foundation for clustering analysis. The data is cleaned by removing games with non-standard variants, incomplete results, or missing Elo ratings.
-%
-%Original data can be accessed under the open database at Lichess.org. This is a very good source of raw record data for chess games, such as several billion games within the Lichess platform. It maintains metadata about the players' ratings, time controls, and outcomes, along with full move sequences in PGN format. The database is a treasure for research due to its size, diversity, and good accessibility; material on most types of games and all skill levels from beginners through grandmasters is covered.
+Portable Game Notation (PGN) is a format for the collection and storage of chess games in a manner that is easy to read for both computers and humans. \cite{b9} PGN text comes in the form of several tags, each a key-value pair enclosed within square brackets, and a list of moves in algebraic notation with a counter of how many full turns have passed. Since the text is already mainly in the form of key-value pairs, we read each one into a dictionary, with the moves coming after being added with the key "Moves."
 
 Not every game furnished in this file is appropriate for our purposes, however; Some may be variant games, some may not have the Elo rating of one or both players, or feature other such issues. We first check that each game is acceptable for our purposes by checking them against 4 criteria:
 \begin{enumerate}
@@ -75,7 +71,7 @@ Not every game furnished in this file is appropriate for our purposes, however; 
     \item The game must have a normal result (1-0 White win, 0-1 Black win, 1/2-1/2 draw).
     \item The game must have valid Elo ratings for both players.
 \end{enumerate}
-If the game features meets all of these criteria, we include it in our dataset, and in total there are about 1.7 million suitable games in the dataset.
+If the game meets all of these criteria, we include it in our dataset, and in total there are about 1.7 million suitable games in the dataset.
 
 \begin{table}[htbp]
 \vspace{.01cm}
@@ -125,7 +121,7 @@ In terms of the distribution of games, it appears to closely follow a normal dis
 
 K-means clustering does have some limitations as detailed in \cite{b4}, but the dataset used helps mitigate some of these: The density of the data is relatively dense within the 100-Elo bins, and the meticulous task of selecting a good value for k is greatly sped along via computation of silhouette score and examination of elbow curves.
 
-After clustering the dataset, statistical analyses and visualization are performed to interpret the relationship between Elo ratings, game results, and gameplay patterns. these analyses highlight trends across different skill levels and provide actionable insight into the dataset.
+After clustering the dataset, statistical analyses and visualization are performed to interpret the relationship between Elo ratings, game results, and gameplay patterns. These analyses highlight trends across different skill levels and provide actionable insight into the dataset.
 \subsection{Classification Implementation}
 
 Before attempting any sort of classification, we first remove the top and bottom 1\% of data for the purpose of removing any outliers.  Naive-Bayes text classification requires at least two distinct parts: The vectorizer, and the classifier. The choice of vectorizer and classifier can make a world of difference on the same dataset. In order to properly explore the space, we will use a variety of techniques and use every combination so that all possibilities are accounted for.
@@ -138,7 +134,7 @@ Many different Python libraries were leveraged to work on this project:
 \item Numpy, for many quick implementations of mathematical operations.
 \item Matplotlib, for all data visualizations.
 \item Scikit-learn, for K-means implementation, Naive-Bayes classifications, and all related machine learning statistics.
-\item python-chess, to convert all of the PGN data into acceptible UCI data.
+\item python-chess, to convert all of the PGN data into acceptable UCI data.
 \end{itemize}
 
 For PGN elaboration, a custom parser has been used to extract relevant features from each suitable game: players' ratings, total moves, and the game's outcome. Then, data normalization was performed for correct clustering, while missing values were treated by deleting incomplete games. Therefore, k-means implementation was employed for the structured dataset, while the number of clusters was determined by the elbow method and silhouette score for the best performance. All the computations have been done on the free version of Google Colab, where computational resources were good enough to run this clustering analysis, though sometimes very limiting regarding duration and hardware.
@@ -147,7 +143,7 @@ For PGN elaboration, a custom parser has been used to extract relevant features 
 Quality clustering for the PGN project was made using some different metrics; among them, the most important was the silhouette score since this score gives a measure of how well the clusters are kept apart, and how well the game fits within its assigned cluster. In that way, clusters reflect real differences in either the level of players or their style of play. Additionally, inertia (within-cluster sum of squares) was used to evaluate the compactness of data points within clusters. Cluster size distribution was analyzed to identify any imbalances or outliers affecting the clustering process. To ensure the clusters' interpretability, we compared results against logical groupings, such as player rating ranges or typical game lengths, confirming that the clusters provided insight into game dynamics. These also allow us to assess the performance of our approach against overall simpler baselines such as rating-only clustering.
 
 \subsection{Baseline}
-The baselines were necessary for giving a comparison to the effectiveness of the clustering methodology on PGN data. A simple baseline entails the grouping of chess games regarding players' ratings into pre-defined ranges of cut-off, for instance, beginning, intermediate, and advanced players. This was a simplified comparison that didn't give a deep scope on how other features such as game length and its outcome interact. Other baselines were k-means clustering on fewer features for further benchmark performance checks. Comparing those with our multi-feature clustering methodology, we could then illustrate the advantages of integrating diverse features for nuanced gameplay. Since we were on the free version of Google Colab, runtime and memory needed to be optimized for baseline testing to do efficient experiments within resource bounds.
+The baselines were necessary for giving a comparison to the effectiveness of the clustering methodology on PGN data. A simple baseline entails the grouping of chess games regarding players' ratings into predefined ranges of cut-off, for instance, beginning, intermediate, and advanced players. This was a simplified comparison that didn't give a deep scope on how other features such as game length and its outcome interact. Other baselines were k-means clustering on fewer features for further benchmark performance checks. Comparing those with our multi-feature clustering methodology, we could then illustrate the advantages of integrating diverse features for nuanced gameplay. Since we were on the free version of Google Colab, runtime and memory needed to be optimized for baseline testing to do efficient experiments within resource bounds.
 
 \subsection{Hyperparameters}
 The hyperparameters in this program are tuned carefully to optimize the clustering and feature extraction performance of the chess games. For the k-means clustering algorithm, the most important hyperparameter was the number of clusters derived from the unique groups of Elo rating determined by the program. This made sure that the grouping of the skill levels of players was logical. We varied the RESOLUTION parameter from this model to 500, which grouped the Elo ratings into bins of 500 (e.g. 0-499, 500-999, etc.), thus affecting clustering granularity. The preprocessing feature extraction also went through a TF-IDF vectorizer where, among its parameters, tokenization and stopword filtering were developed focusing on dealing with the densest pieces of text data. These hyperparameters control parsing data, such as GAME LIMIT, but also optional flags like DOUBLE GAMES. These balance the volume and variety of preprocessed data for scalability but still meaningful results. These have been iteratively tuned through testing to balance performance with computational efficiency.
@@ -180,7 +176,7 @@ As an example, UCI text which is treated to a TF-IDF vectorization, stratified d
 \caption{A scatterplot of all the games in consideration, colored in accordance to which cluster they belong to.}
 \end{figure}
 
-Using k=7 clusters, all the games quickly and cleanly separate out into nearly-equal width bands between 1250 Elo and about 2100 Elo. Any values below 1250 are in their own cluster, and any values above 2100 are in their own cluster as well. Interestingly, this seems to remain true even when the cluster count increases, with the bands in between getting thinner to fit. This isn't an intentional feature of the clustering algorithm, but it's one that works in our advantage: These self-inforced bounds are roughly equivalent to the bound between novices and intermediate players, and the bound between intermediate players and experts \cite{b6}. Move length seems to have no bearing on the clustering at all.
+Using k=7 clusters, all the games quickly and cleanly separate out into nearly-equal width bands between 1250 Elo and about 2100 Elo. Any values below 1250 are in their own cluster, and any values above 2100 are in their own cluster as well. Interestingly, this seems to remain true even when the cluster count increases, with the bands in between getting thinner to fit. This isn't an intentional feature of the clustering algorithm, but it's one that works to our advantage: These self-inforced bounds are roughly equivalent to the bound between novices and intermediate players, and the bound between intermediate players and experts \cite{b6}. Move length seems to have no bearing on the clustering at all.
 
 \subsection{Classification}
 \begin{table}[htbp]
@@ -222,8 +218,8 @@ Table \ref{table:class-results} contains the accuracy scores of each of the 8 co
 Some trends appear in regards to how specific choices affect the average accuracy of the predictions.
 \begin{itemize}
 \item Generally, classification is improved by using TF-IDF vectorization over word count vectorization, with MNB losing approximately 5-6\% accuracy when switching between the two and CMB losing 0.5-0.9\%.
-\item Strafitication affected accuracy very little, with the random sampling picking approximately the same frequency of classes as the guaranteed frequencies enforced by stratification. In most cases, not using stratification increased overall accuracy by a few hundredths of a percentage point, except when using UCI text with word count vectorization, in which case accuracy decreases approximately 0.008\% with MNB and 0.05\% with CMB.
-\item Against expectations, Multinomial Naive-Bayes outperforms Complement Naive-Bayes in all cases, being approximately 7\% more accurate with TD-IDF vectorization and 2\% more accurate with word count vectorization.
+\item Stratification affected accuracy very little, with the random sampling picking approximately the same frequency of classes as the guaranteed frequencies enforced by stratification. In most cases, not using stratification increased overall accuracy by a few hundredths of a percentage point, except when using UCI text with word count vectorization, in which case accuracy decreases approximately 0.008\% with MNB and 0.05\% with CMB.
+\item Against expectations, Multinomial Naive-Bayes outperforms Complement Naive-Bayes in all cases, being approximately 7\% more accurate with TF-IDF vectorization and 2\% more accurate with word count vectorization.
 \end{itemize}
 
 \section{Conclusion}
@@ -231,7 +227,7 @@ Some trends appear in regards to how specific choices affect the average accurac
 It should be done in a way to show the power of machine learning techniques in analyzing games and a player's skill in chess. This project uses k-means clustering and Naive-Bayes classification to address some issues with traditional Elo-based analyses and provides comprehensive information on player performance and game dynamics.
 
 \begin{itemize}
-    \item  A multifeature clustering that groups games based on player ratings, move lengths, and outcome indeed reflects different patterns for different skill levels.
+    \item  A multi-feature clustering that groups games based on player ratings, move lengths, and outcome indeed reflects different patterns for different skill levels.
     \item Classification methods using game move and metadata inputs capable of accurately predicting player Elo ratings.
 \end{itemize}
 
